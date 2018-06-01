@@ -1,6 +1,6 @@
 FROM openjdk:8-jre-alpine
 
-ARG version
+ARG version=0.3.1
 
 ENV JAVA_OPTS ""
 ENV JMX_OPTS  "-Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false"
