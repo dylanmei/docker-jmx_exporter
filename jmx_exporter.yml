@@ -2,8 +2,218 @@
 # https://github.com/prometheus/jmx_exporter#configuration
 #
 hostPort: broker:9010
-username: 
-password: 
 
 rules:
-- pattern: ".*"
+- pattern: java.lang<type=GarbageCollector, name=(.+)><>CollectionCount
+  name: java_garbage_collector_collection_count
+  type: COUNTER
+  labels:
+    name: $1
+
+- pattern: java.lang<type=GarbageCollector, name=(.+)><>CollectionTime
+  name: java_garbage_collector_collection_time
+  type: GAUGE
+  labels:
+    name: $1
+
+- pattern: java.lang<type=GarbageCollector,name=(.+)><LastGcInfo, duration>
+  name: java_garbage_collector_last_gc_duration
+  type: GAUGE
+  labels:
+    name: $1
+
+- pattern: java.lang<type=GarbageCollector, name=(.+), key=(.+)><LastGcInfo, memoryUsage(\w+)Gc>(\w+)
+  name: java_garbage_collector_last_gc_memory_$4
+  type: GAUGE
+  labels:
+    name: $1
+    space: $2
+    type: $4
+
+- pattern: java.lang<type=Memory><HeapMemoryUsage>(\w+)
+  name: java_heap_memory_usage
+  type: GAUGE
+  labels:
+    type: $1
+
+- pattern: java.lang<type=Memory><NonHeapMemoryUsage>(\w+)
+  name: java_non_heap_memory_usage
+  type: GAUGE
+  labels:
+    type: $1
+
+- pattern: java.lang<type=MemoryPool, name=(.+)><CollectionUsage>(\w+)
+  name: java_memory_pool_collection_usage
+  type: GAUGE
+  labels:
+    name: $1
+    type: $2
+
+- pattern: java.lang<type=MemoryPool, name=(.+)><Usage>(\w+)
+  name: java_memory_pool_usage
+  type: GAUGE
+  labels:
+    name: $1
+    type: $2
+
+- pattern: java.lang<type=MemoryPool, name=(.+)><PeakUsage>(\w+)
+  name: java_memory_pool_peak_usage
+  type: GAUGE
+  labels:
+    name: $1
+    type: $2
+
+- pattern: java.lang<type=Threading><>ThreadCount
+  name: java_threading_thread_count
+  type: GAUGE
+
+- pattern: java.lang<type=Threading><>DaemonThreadCount
+  name: java_threading_daemon_thread_count
+  type: GAUGE
+
+- pattern: java.lang<type=Threading><>PeakThreadCount
+  name: java_threading_peak_thread_count
+  type: GAUGE
+
+- pattern: java.lang<type=Threading><>TotalThreadCount
+  name: java_threading_total_thread_count
+  type: GAUGE
+
+- pattern: java.lang<type=ClassLoading><>LoadedClassCount
+  name: java_class_loading_loaded_class_count
+  type: GAUGE
+
+- pattern: java.lang<type=ClassLoading><>UnloadedClassCount
+  name: java_class_loading_unloaded_class_count
+  type: GAUGE
+
+- pattern: java.lang<type=ClassLoading><>TotalLoadedClassCount
+  name: java_class_loading_total_loaded_class_count
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>FreePhysicalMemorySize
+  name: java_os_free_physical_memory_size
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>TotalPhysicalMemorySize
+  name: java_os_total_physical_memory_size
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>CommittedVirtualMemorySize
+  name: java_os_committed_virtual_memory_size
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>FreeSwapSpaceSize
+  name: java_os_free_swap_space_size
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>TotalSwapSpaceSize
+  name: java_os_total_swap_space_size
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>AvailableProcessors
+  name: java_os_available_processors
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>ProcessCpuTime
+  name: java_os_process_cpu_time
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>ProcessCpuLoad
+  name: java_os_process_cpu_load
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>SystemCpuLoad
+  name: java_os_system_cpu_load
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>MaxFileDescriptorCount
+  name: java_os_max_file_descriptor_count
+  type: GAUGE
+
+- pattern: java.lang<type=OperatingSystem><>OpenFileDescriptorCount
+  name: java_os_open_file_descriptor_count
+  type: GAUGE
+
+- pattern: kafka.server<type=ReplicaManager, name=(\w+)><>Count
+  name: kafka_replication_$1_count
+  type: COUNTER
+
+- pattern: kafka.server<type=ReplicaManager, name=(\w+)><>Value
+  name: kafka_replication_$1_value
+  type: GAUGE
+
+- pattern: kafka.server<type=ReplicaManager, name=(\w+)><>(.+)Rate
+  name: kafka_replication_$1_rate
+  type: GAUGE
+  labels:
+    rate: $2
+
+- pattern: kafka.controller<type=KafkaController, name=(\w+)><>Value
+  name: kafka_controller_$1_value
+  type: GAUGE
+
+- pattern: kafka.network<type=RequestMetrics, name=(\w+), request=(\w+)><>Count
+  name: kafka_network_$2_$1_count
+  type: COUNTER
+
+- pattern: kafka.network<type=RequestMetrics, name=(\w+), request=(\w+)><>(.+)Percentile
+  name: kafka_network_$2_$1_time
+  type: GAUGE
+  labels:
+    percentile: $3
+
+- pattern: kafka.network<type=RequestMetrics, name=(\w+), request=(\w+)><>(.+)Rate
+  name: kafka_network_$2_$1_rate
+  type: GAUGE
+  labels:
+    rate: $3
+
+- pattern: kafka.controller<type=ControllerStats, name=(\w+)RateAndTimeMs><>Count
+  name: kafka_controller_$1_count
+  type: COUNTER
+
+- pattern: kafka.controller<type=ControllerStats, name=(\w+)RateAndTimeMs><>(.+)Rate
+  name: kafka_controller_$1_rate
+  type: GAUGE
+  labels:
+    rate: $2
+
+- pattern: kafka.controller<type=ControllerStats, name=(\w+)RateAndTimeMs><>(.+)Percentile
+  name: kafka_controller_$1_time
+  type: GAUGE
+  labels:
+    percentile: $2
+
+- pattern: kafka.server<type=BrokerTopicMetrics, name=(\w+)><>(Count)
+  name: kafka_broker_$1_count
+  type: COUNTER
+
+- pattern: kafka.server<type=BrokerTopicMetrics, name=(\w+)><>(.+)Rate
+  name: kafka_broker_$1_rate
+  type: GAUGE
+  labels:
+    rate: $2
+
+- pattern: kafka.server<type=BrokerTopicMetrics, name=(\w+), topic=(.+)><>Count
+  name: kafka_topic_$1_count
+  type: COUNTER
+  labels:
+    topic: $2
+
+- pattern: kafka.server<type=BrokerTopicMetrics, name=(\w+), topic=(.+)><>(.+)Rate
+  name: kafka_topic_$1_rate
+  type: GAUGE
+  labels:
+    topic: $2
+    rate: $3
+
+- pattern: kafka.server<type=DelayedOperationPurgatory, name=(\w+), delayedOperation=(\w+)><>Value
+  name: kafka_delayed_operation_purgatory_$1_value
+  labels:
+    operation: $2
+
+# TODO:
+# - kafka.server:type=ProducerRequestPurgatory,name=PurgatorySize
+# - kafka.server:type=FetchRequestPurgatory,name=PurgatorySize
+# - kafka.coordinator<type=GroupMetadataManager,name=...><>Value
