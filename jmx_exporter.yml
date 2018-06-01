@@ -1,0 +1,9 @@
+---
+# https://github.com/prometheus/jmx_exporter#configuration
+#
+hostPort: broker:9010
+username: 
+password: 
+
+rules:
+- pattern: ".*"
